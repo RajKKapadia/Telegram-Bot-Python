@@ -1,12 +1,11 @@
+from outside_apis.openai_api import text_complition
+from outside_apis.telegram_api import send_message, set_webhook
+from helper.utils import process_request
 import os
 
 from flask import Flask, request
 from dotenv import load_dotenv
 load_dotenv()
-
-from helper.utils import processRequest
-from outside_apis.telegram_api import sendMessage
-from outside_apis.openai_api import textComplition
 
 
 app = Flask(__name__)
@@ -22,28 +21,40 @@ HEADER_TOKEN = os.getenv('HEADER_TOKEN')
 
 @app.route('/telegram', methods=['POST'])
 def telegram_api():
+
     if request.is_json:
 
-        data = processRequest(request=request)
+        data = process_request(request=request)
 
         if data['secret_token'] == HEADER_TOKEN:
 
-            result = textComplition(data['message'])
-
-            if result['status'] == 1:
-                _ = sendMessage(data['sender_id'], result['response'])
-                return 'OK', 200
+            if data['is_text']:
+                result = text_complition(data['message'])
+                if result['status'] == 1:
+                    _ = send_message(data['sender_id'], result['response'])
+                    return 'OK', 200
+                else:
+                    return 'SERVER ERROR', 200
             else:
-                return 'SERVER ERROR', 200
+                _ = send_message(data['sender_id'], 'Hey, that is great, but I only understand text and commands at this time.')
 
         return 'BAD REQUEST', 400
     else:
         return 'BAD REQUEST', 400
 
 
-@app.route('/set-webhook', methods=['POST'])
-def set_webhook():
-    url_root = request.url_root
-    webhook_url = f'{url_root}telegram'
-    print(webhook_url)
-    return 'OK', 200
+@app.route('/set-telegram-webhook', methods=['POST'])
+def set_telegram_webhook():
+
+    if request.is_json:
+
+        body = request.get_json()
+
+        flag = set_webhook(body['url'], body['secret_token'])
+
+        if flag:
+            return 'OK', 200
+        else:
+            'BAD REQUEST', 400
+    else:
+        'BAD REQUEST', 400
