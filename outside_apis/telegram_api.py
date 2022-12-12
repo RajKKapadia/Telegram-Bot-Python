@@ -1,5 +1,6 @@
 import os
 import json
+from typing import List
 
 import requests
 from dotenv import load_dotenv
@@ -92,6 +93,33 @@ def set_webhook(url: str, secret_token: str = '') -> bool:
 
     response = requests.request(
         'POST', f'{BASE_URL}/setWebhook', json=payload, headers=headers)
+    status_code = response.status_code
+    response = json.loads(response.text)
+
+    if status_code == 200 and response['ok']:
+        return True
+    else:
+        return False
+
+
+def set_menu_commands(commands: List[dict]) -> bool:
+    '''
+    Set a menu commands in the Telegram bot
+
+    Parameters:
+        - commands(List[dict]): commands is a list of objects, each object must have two properties command and description
+        where command is postback to Telegram, while description explains the command to the user
+
+    Returns:
+        - bool: either 0 for error or 1 for success
+    '''
+
+    payload = {'commands': commands}
+
+    headers = {'Content-Type': 'application/json'}
+
+    response = requests.request(
+        'POST', f'{BASE_URL}/setMyCommands', json=payload, headers=headers)
     status_code = response.status_code
     response = json.loads(response.text)
 

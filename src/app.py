@@ -1,5 +1,5 @@
 from outside_apis.openai_api import text_complition
-from outside_apis.telegram_api import send_message, set_webhook
+from outside_apis.telegram_api import send_message, set_webhook, set_menu_commands
 from helper.utils import process_request
 import os
 
@@ -51,6 +51,23 @@ def set_telegram_webhook():
         body = request.get_json()
 
         flag = set_webhook(body['url'], body['secret_token'])
+
+        if flag:
+            return 'OK', 200
+        else:
+            'BAD REQUEST', 400
+    else:
+        'BAD REQUEST', 400
+
+
+@app.route('/set-telegram-menu-commands', methods=['POST'])
+def set_telegram_menu_commands():
+
+    if request.is_json:
+
+        body = request.get_json()
+
+        flag = set_menu_commands(body['commands'])
 
         if flag:
             return 'OK', 200
