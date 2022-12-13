@@ -28,6 +28,8 @@ def telegram_api():
             if data['is_text']:
                 response = generate_response(data['message'])
                 _ = save_message_to_db(data, response)
+            elif data['is_chat_deleted']:
+                response = ''
             else:
                 response = 'Hey, this is great, but I only understand text and commands at this time.'
             _ = send_message(data['sender_id'], response)
