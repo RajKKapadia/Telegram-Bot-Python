@@ -1,8 +1,10 @@
 import os
 
+
 import openai
 from dotenv import load_dotenv
 load_dotenv()
+
 
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
@@ -37,3 +39,4 @@ def text_complition(prompt: str) -> dict:
             'status': 0,
             'response': ''
         }
+        
