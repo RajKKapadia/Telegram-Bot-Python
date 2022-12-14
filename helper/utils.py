@@ -24,7 +24,6 @@ def process_request(request: request) -> dict:
     '''
     
     body = request.get_json()
-    print(json.dumps(body))
     headers = request.headers
     secret_token = headers['X-Telegram-Bot-Api-Secret-Token']
 

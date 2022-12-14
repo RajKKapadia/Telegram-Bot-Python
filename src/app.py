@@ -32,7 +32,7 @@ def telegram_api():
                 response = 'I know you are a bot.'
             else:
                 response = ''
-                _ = send_message(data['sender_id'], response)    
+            _ = send_message(data['sender_id'], response)    
             return 'OK', 200
         _ = send_message(os.getenv('ME'), 'Fire in the whole.')
         return 'OK', 200
