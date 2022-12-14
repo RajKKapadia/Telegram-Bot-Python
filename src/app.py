@@ -25,14 +25,14 @@ def telegram_api():
     if request.is_json:
         data = process_request(request)
         if data['secret_token'] == os.getenv('HEADER_TOKEN'):
-            if data['is_text']:
+            if data['is_text'] and not data['is_bot']:
                 response = generate_response(data['message'])
                 _ = save_message_to_db(data, response)
-            elif data['is_chat_deleted']:
-                response = ''
+            elif data['is_bot']:
+                response = 'I know you are a bot.'
             else:
-                response = 'Hey, this is great, but I only understand text and commands at this time.'
-            _ = send_message(data['sender_id'], response)
+                response = ''
+                _ = send_message(data['sender_id'], response)    
             return 'OK', 200
         _ = send_message(os.getenv('ME'), 'Fire in the whole.')
         return 'OK', 200

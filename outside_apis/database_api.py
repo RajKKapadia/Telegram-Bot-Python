@@ -83,9 +83,7 @@ def save_message_to_db(data: dict, response: str) -> bool:
 
     user = {
         'first_name': data['first_name'],
-        'last_name': data['last_name'],
         'telegram_id': data['sender_id'],
-        'user_name': data['user_name'],
         'messages': [message]
     }
 

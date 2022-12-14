@@ -17,48 +17,37 @@ def process_request(request: request) -> dict:
             'is_text': is_text,
             'is_chat_deleted': is_chat_deleted,
             'sender_id': sender_id,
-            'user_name': user_name,
             'message': message,
             'secret_token': secret_token,
-            'first_name': first_name,
-            'last_name': last_name
+            'first_name': first_name
         }
     '''
     
     body = request.get_json()
+    print(json.dumps(body))
     headers = request.headers
     secret_token = headers['X-Telegram-Bot-Api-Secret-Token']
 
-    is_text = False
     message = ''
-    is_chat_deleted = False
+    is_bot = True
+    is_text = False
 
     if 'message' in body.keys():
         sender_id = body['message']['from']['id']
-        user_name = body['message']['from']['username']
         first_name = body['message']['from']['first_name']
-        last_name = body['message']['from']['last_name']
+        is_bot = body['message']['from']['is_bot']
 
         if 'text' in body['message'].keys():
             message += body['message']['text']
             is_text = True
-    elif 'my_chat_member' in body.keys():
-        if 'old_chat_member' in body['my_chat_member'].keys():
-            sender_id = body['my_chat_member']['chat']['id']
-            first_name = body['my_chat_member']['chat']['first_name']
-            last_name = body['my_chat_member']['chat']['last_name']
-            user_name = body['my_chat_member']['chat']['username']
-            is_chat_deleted = True
 
     return {
         'is_text': is_text,
-        'is_chat_deleted': is_chat_deleted,
         'sender_id': sender_id,
-        'user_name': user_name,
         'message': message,
         'secret_token': secret_token,
         'first_name': first_name,
-        'last_name': last_name
+        'is_bot': is_bot
     }
 
 def generate_response(message: str) -> str:
