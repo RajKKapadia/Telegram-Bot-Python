@@ -30,6 +30,9 @@ def process_request(request: request) -> dict:
     message = ''
     is_bot = True
     is_text = False
+    first_name = ''
+    sender_id = None
+
 
     if 'message' in body.keys():
         sender_id = body['message']['from']['id']
