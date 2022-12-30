@@ -9,7 +9,7 @@ You can interact with this bot [here](http://t.me/askme_anything_bot).
 ![GitHub followers](https://img.shields.io/github/followers/RajKKapadia?style=for-the-badge)
 
 ### Youtube
-I have recorded a quick video on the setup of this chat-bot, in case you want to replicate the work, you can watch it [here]().
+I have recorded a quick video on the setup of this chat-bot, in case you want to replicate the work, you can watch it [here](https://youtu.be/AdfQAbzxw30).
 
 ### What you will need
 There are couple of things that you need before you get started following this repository.
@@ -31,6 +31,7 @@ To replicate the work of this repository and run it locally, you need to follow 
     DB_NAME=MONGODB DB NAME
     COLLECTION_NAME=MONGO DB COLLECTION NAME
     ```
+* create a virtual environment and activate it before installing the packages
 * install all the required dependencies from the `requirements.txt` file
 ```python
 pip install -r requirements.txt
