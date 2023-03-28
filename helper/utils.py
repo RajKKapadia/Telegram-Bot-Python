@@ -2,7 +2,7 @@ import json
 
 from flask import request
 
-from outside_apis.openai_api import text_complition
+from outside_apis.openai_api import chat_complition
 
 
 def process_request(body: dict) -> dict:
@@ -68,7 +68,7 @@ def generate_response(message: str) -> str:
     if message in data.keys():
         return data[message]
     else:
-        result = text_complition(message)
+        result = chat_complition(message)
         if result['status'] == 1:
             return result['response'].strip()
         else:

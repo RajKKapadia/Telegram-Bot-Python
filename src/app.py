@@ -4,7 +4,7 @@ import json
 
 from outside_apis.telegram_api import send_message, set_webhook, set_menu_commands
 from helper.utils import process_request, generate_response
-from outside_apis.database_api import get_user, create_user, update_messages, create_payment
+from outside_apis.database_api import get_user, create_user, update_messages, create_payment, get_all_user
 
 
 from flask import Flask, request
@@ -106,6 +106,27 @@ def receive_payment():
         body = request.get_json()
         create_payment(body)
         _ = send_message(os.getenv('ME'), 'New payment received.')
+    else:
+        pass
+    return 'OK', 200
+
+@app.route('/send/all', methods=['POST'])
+def send_all():
+    if request.is_json:
+        body = request.get_json()
+        sender_ids = get_all_user()
+        if len(sender_ids) > 0:
+            for id in sender_ids:
+                _ = send_message(id, body['message'])
+    else:
+        pass
+    return 'OK', 200
+
+@app.route('/send/one', methods=['POST'])
+def send_one():
+    if request.is_json:
+        body = request.get_json()
+        _ = send_message(body['sender_id'], body['message'])
     else:
         pass
     return 'OK', 200

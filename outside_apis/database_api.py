@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-from typing import Any
+from typing import Any, List
 
 
 from pymongo import MongoClient
@@ -146,3 +146,25 @@ def create_payment(payment: dict) -> bool:
     result = payment_collection.insert_one(payment)
 
     return result.acknowledged
+
+def get_all_user() -> List[int]:
+    '''
+    Get user
+
+    Parameters:
+        - sender_id(str): sender id of the user
+
+    Returns:
+        - bool, 0 for failure and 1 for success
+    '''
+
+    try:
+        cursor = user_collection.find({})
+        sender_ids = []
+        for doc in cursor:
+            sender_ids.append(doc['sender_id'])
+        
+        return sender_ids
+    except:
+        return []
+    
