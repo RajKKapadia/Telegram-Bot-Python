@@ -105,6 +105,7 @@ def receive_payment():
     if request.is_json:
         body = request.get_json()
         create_payment(body)
+        _ = send_message(os.getenv('ME'), 'New payment received.')
     else:
         pass
     return 'OK', 200
