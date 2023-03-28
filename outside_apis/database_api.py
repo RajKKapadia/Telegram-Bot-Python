@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+from typing import Any
 
 
 from pymongo import MongoClient
@@ -9,51 +10,38 @@ load_dotenv()
 
 client = MongoClient(os.getenv('CONNECTION_STRING'))
 db = client[os.getenv('DB_NAME')]
-collection = db[os.getenv('COLLECTION_NAME')]
+user_collection = db[os.getenv('USER_COLLECTION')]
+payment_collection = db[os.getenv('PAYMENT_COLLECTION')]
 
 
-def create_user(user: dict) -> bool:
+def update_messages(sender_id: int, query: str, response: str, message_count: int) -> bool:
     '''
-    Create a new user
+    Update messages for the user and reduce the messages_count by one
 
     Parameters:
-        - user(dict)
+        - sender_id(int): user telegram id
+        - response(str): response of the bot
+        - query(str): query of the user
 
     Returns:
         - bool, 0 for failure and 1 for success
     '''
+    message = {
+        'query': query,
+        'response': response,
+        'created_at': datetime.now().strftime('%d/%m/%Y, %H:%M')
+    }
 
-    result = collection.find_one(
+    result = user_collection.find_one_and_update(
         {
-            'telegram_id': user['telegram_id']
-        }
-    )
-
-    if not result:
-        result = collection.insert_one(user)
-        return result.acknowledged
-    return False
-
-
-def insert_message(telegram_id: int, message: dict) -> bool:
-    '''
-    Update messages for the user
-
-    Parameters:
-        - telegram_id(int): user telegram id
-        - message(dict): mesage document to insert
-
-    Returns:
-        - bool, 0 for failure and 1 for success
-    '''
-
-    result = collection.find_one_and_update(
-        {
-            'telegram_id': telegram_id
+            'sender_id': sender_id
         },
         {
             '$push': {
                 'messages': message
+            },
+            '$set': {
+                'message_count': message_count
             }
         }
     )
@@ -64,9 +52,9 @@ def insert_message(telegram_id: int, message: dict) -> bool:
         return True
 
 
-def save_message_to_db(data: dict, response: str) -> bool:
+def create_user(data: dict, response: str) -> bool:
     '''
-    Process thewhole body and update the db
+    Process the whole body and update the db
 
     Parameters:
         - data(dict): the incoming request from Telegram
@@ -83,14 +71,78 @@ def save_message_to_db(data: dict, response: str) -> bool:
 
     user = {
         'first_name': data['first_name'],
-        'telegram_id': data['sender_id'],
-        'messages': [message]
+        'sender_id': data['sender_id'],
+        'messages': [message],
+        'message_count': 2,
+        'mobile': '',
+        'name': '',
+        'channel': 'Telegram',
+        'is_paid': False,
+        'created_at': datetime.now().strftime('%d/%m/%Y, %H:%M')
     }
 
-    result = create_user(user)
+    result = user_collection.insert_one(user)
 
-    if result:
-        return True
+    return result.acknowledged
+
+
+def update_all_records(update: dict) -> bool:
+    '''
+    Update all documents in the collection
+
+    Parameters:
+        - update(dict): update to the documents
+
+    Returns:
+        - bool, 0 for failure and 1 for success
+    '''
+
+    result = user_collection.update_many(
+        {},
+        {
+            '$set': update
+        }
+    )
+
+    if not result:
+        return False
     else:
-        result = insert_message(data['sender_id'], message)
-        return result
+        return True
+
+
+def get_user(sender_id: int) -> Any:
+    '''
+    Get user
+
+    Parameters:
+        - sender_id(str): sender id of the user
+
+    Returns:
+        - bool, 0 for failure and 1 for success
+    '''
+
+    result = user_collection.find_one(
+        {
+            'sender_id': sender_id
+        }
+    )
+
+    if not result:
+        None
+    return result
+
+
+def create_payment(payment: dict) -> bool:
+    '''
+    Add a new payment details to db
+
+    Parameters:
+        - payment(dict): Stripe payment data
+
+    Returns:
+        - bool, 0 for failure and 1 for success
+    '''
+
+    result = payment_collection.insert_one(payment)
+
+    return result.acknowledged

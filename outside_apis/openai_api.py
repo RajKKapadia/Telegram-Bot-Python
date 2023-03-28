@@ -39,4 +39,3 @@ def text_complition(prompt: str) -> dict:
             'status': 0,
             'response': ''
         }
-        
