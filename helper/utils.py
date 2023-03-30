@@ -2,7 +2,7 @@ import json
 from flask import request
 
 
-from outside_apis.openai_api import text_complition
+from outside_apis.openai_api import chat_complition
 
 def process_request(request: request) -> dict:
     '''
