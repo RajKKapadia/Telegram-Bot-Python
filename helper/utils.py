@@ -75,7 +75,7 @@ def generate_response(message: str) -> str:
     elif message == '/start':
         return 'Hi, this is a chat-bot that uses OpenAI GPT-3, developed by me with love. I will not spam you for sure.'
     else:
-        result = text_complition(message)
+        result = chat_complition(message)
         if result['status'] == 1:
             return result['response'].strip()
         else:
