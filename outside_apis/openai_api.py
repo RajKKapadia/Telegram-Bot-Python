@@ -9,7 +9,7 @@ load_dotenv()
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
 
-def text_complition(prompt: str) -> dict:
+def chat_complition(prompt: str) -> dict:
     '''
     Call Openai API for chat completion
     Parameters:
